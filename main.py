@@ -10,7 +10,7 @@ pygame.display.set_caption("Shooter Platformer")  # set the current window capti
 clock = pygame.time.Clock()
 FPS = 60
 
-background_img = pygame.image.load("img/background/mountain.png")
+
 
 section_size = 36  # define the size of sections (задаем размер ячеек)
 
@@ -59,7 +59,7 @@ player2 = Player(400, 200, 2)
 
 
 while True:
-    screen.blit(background_img, (0, 0))  # draw an image (рисуем изображение)
+    
 
     player.draw()
     player2.draw()
