@@ -19,7 +19,7 @@ pygame.display.set_caption('Platformer Shooter')
 clock = pygame.time.Clock()
 FPS = 60
 set_timer = 100
-set_timer1 = 1000
+set_timer1 = 400
 
 #define game variables
 GRAVITY = 0.75
@@ -34,11 +34,13 @@ bg_scroll = 0
 level = 1
 start_game = False
 start_intro = False
+start_menu = False
 settings = False
 health = 100
 health_enemy = 100
 ammo = 20
 grenades = 5
+audio = 1
 
 
 #define player action variables
@@ -293,7 +295,7 @@ class Soldier(pygame.sprite.Sprite):
 
         #update scroll based on player position
         if self.char_type == 'player':
-            if (self.rect.right > SCREEN_WIDTH - SCROLL_THRESH and bg_scroll < (world.level_length * TILE_SIZE) - SCREEN_WIDTH)\
+            if (self.rect.right > SCREEN_WIDTH - SCROLL_THRESH and abs(bg_scroll) < (world.level_length * TILE_SIZE) - SCREEN_WIDTH)\
                 or (self.rect.left < SCROLL_THRESH and bg_scroll > abs(dx)):
                 self.rect.x -= dx
                 screen_scroll = -dx
@@ -690,6 +692,7 @@ class ScreenFade():
 #create screen fades
 intro_fade = ScreenFade(1, BLACK, 4)
 death_fade = ScreenFade(2, RED, 4)
+menu_fade = ScreenFade(2, KHAKI, 4)
 
 
 #create buttons
@@ -716,6 +719,7 @@ decoration_group = pygame.sprite.Group()
 water_group = pygame.sprite.Group()
 exit_group = pygame.sprite.Group()
 flag_group = pygame.sprite.Group()
+button_group = pygame.sprite.Group()
 
 
 
@@ -745,10 +749,10 @@ while run:
         #add buttons
         start_button.draw(screen)
         exit_button.draw(screen)
-        if start_button.action():
+        if start_button.action:
             button_sound.play()
             settings = True
-        if exit_button.action():
+        if exit_button.action:
             button_sound.play()
             pygame.quit()
     if (settings == True) and (start_game == False):
@@ -764,55 +768,55 @@ while run:
         hard_button.draw(screen)
         exit_button.draw(screen)
         play_button.draw(screen)
-        if lvl1_button.action():
+        if lvl1_button.action:
             button_sound.play()
             level = 1
-            lvl1_button.__init__(300, 150, lvl1_img_1, 2.5)
-            lvl2_button.__init__(400, 150, lvl2_img, 2.5)
-            lvl3_button.__init__(500, 150, lvl3_img, 2.5)
-        if lvl2_button.action():
+            lvl1_button.change_image(lvl1_img_1)
+            lvl2_button.change_image(lvl2_img)
+            lvl3_button.change_image(lvl3_img)
+        if lvl2_button.action:
             button_sound.play()
             level = 2
-            lvl1_button.__init__(300, 150, lvl1_img, 2.5)
-            lvl2_button.__init__(400, 150, lvl2_img_1, 2.5)
-            lvl3_button.__init__(500, 150, lvl3_img, 2.5)
-        if lvl3_button.action():
-            button_sound.play()
+            lvl1_button.change_image(lvl1_img)
+            lvl2_button.change_image(lvl2_img_1)
+            lvl3_button.change_image(lvl3_img)
+        if lvl3_button.action:
+            button_sound.play(0)
             level = 3
-            lvl1_button.__init__(300, 150, lvl1_img, 2.5)
-            lvl2_button.__init__(400, 150, lvl2_img, 2.5)
-            lvl3_button.__init__(500, 150, lvl3_img_1, 2.5)
-        if easy_button.action():
+            lvl1_button.change_image(lvl1_img)
+            lvl2_button.change_image(lvl2_img)
+            lvl3_button.change_image(lvl3_img_1)
+        if easy_button.action:
             button_sound.play()
             health = 100
             ammo = 30
             grenades = 10
             player.change_settings(health, ammo, grenades)
-            easy_button.__init__(300, 245, easy_img_1, 3)
-            normal_button.__init__(425, 245, normal_img, 3)
-            hard_button.__init__(565, 245, hard_img, 3)
-        if normal_button.action():
+            easy_button.change_image(easy_img_1)
+            normal_button.change_image(normal_img)
+            hard_button.change_image(hard_img)
+        if normal_button.action:
             button_sound.play()
             health = 50
             ammo = 20
             grenades = 5
             player.change_settings(health, ammo, grenades)
-            easy_button.__init__(300, 245, easy_img, 3)
-            normal_button.__init__(425, 245, normal_img_1, 3)
-            hard_button.__init__(565, 245, hard_img, 3)
-        if hard_button.action():
+            easy_button.change_image(easy_img)
+            normal_button.change_image(normal_img_1)
+            hard_button.change_image(hard_img)
+        if hard_button.action:
             button_sound.play()
             health = 20
             ammo = 10
             grenades = 2
             player.change_settings(health, ammo, grenades)
-            easy_button.__init__(300, 245, easy_img, 3)
-            normal_button.__init__(425, 245, normal_img, 3)
-            hard_button.__init__(565, 245, hard_img_1, 3)
-        if exit_button.action():
+            easy_button.change_image(easy_img)
+            normal_button.change_image(normal_img)
+            hard_button.change_image(hard_img_1)
+        if exit_button.action:
             button_sound.play()
             pygame.quit()
-        if play_button.action():
+        if play_button.action:
             button_sound.play()
             start_game = True
             settings = False
@@ -897,34 +901,55 @@ while run:
             bg_scroll -= screen_scroll
             #check if player has completed the level
             if level_complete:
-                win_music.play()
+                if audio == 1:
+                    win_music.play()
+                    audio -= 1
                 set_timer -= 1
+                moving_left = False
+                moving_right = False
                 if set_timer <= 0:
-                    moving_left = False
-                    moving_right = False
                     draw_text('YOU WIN!', FONT, WHITE, 310, 250)
-                    draw_text('Press ESC to close the game!', font, WHITE, 265, 450)
-                    set_timer1 -= 1
+                    """draw_text('Press ESC to close the game!', font, WHITE, 265, 450)"""
+                    set_timer1 -= 3
                     if set_timer1 <= 0:
-                        pygame.quit()
+                        start_menu = True
+                        if start_menu == True:
+                            if menu_fade.fade():
+                                start_menu = False
+                                menu_fade.fade_counter = 0
+                                level_complete = False
+                                FPS = 60
+                                set_timer = 100
+                                set_timer1 = 400
+                                screen_scroll = 0
+                                bg_scroll = 0
+                                level = 1
+                                start_game = False
+                                start_intro = False
+                                settings = False
+                                audio = 1
+                                moving_left = False
+                                moving_right = False
 
         else:
-            you_died_fx.play()
-            screen_scroll = 0
+            if audio == 1:
+                you_died_fx.play()
+                audio -= 1
             set_timer -= 1
+            screen_scroll = 0
             if set_timer <= 0:
                 if death_fade.fade():
                     draw_text('YOU DIED!', FONT_90, BLACK, SCREEN_WIDTH // 2 - 160, 200)
                     screen_scroll = 0
                     exit_button.draw(screen)
                     restart_button.draw(screen)
-                    if exit_button.action():
+                    if exit_button.action:
                         button_sound.play()
                         pygame.quit()
-                    if restart_button.action():
+                    if restart_button.action:
                         button_sound.play()
+                        audio = 1
                         set_timer = 100
-                        bg_scroll = 0
                         world_data = reset_level()
                         #load in level data and create world
                         with open(f'level{level}_data.csv', newline='') as csvfile:
