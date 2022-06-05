@@ -312,12 +312,12 @@ class Soldier(pygame.sprite.Sprite):
             #reduce ammo
             self.ammo -= 1
             shot_fx.play()
-            if self.direction == 1:
+            """if self.direction == 1:
                 dx = -9
                 self.rect.x += dx
             if self.direction == -1:
                 dx = 9
-                self.rect.x += dx
+                self.rect.x += dx"""
 
 
     def ai(self):
@@ -486,7 +486,7 @@ class Water(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += screen_scroll
 
-class Exit(pygame.sprite.Sprite):
+"""class Exit(pygame.sprite.Sprite):
     def __init__(self, img, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = img
@@ -495,7 +495,7 @@ class Exit(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x += screen_scroll
-
+"""
 
 class ItemBox(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y):
@@ -730,7 +730,7 @@ for row in range(ROWS):
     world_data.append(r)
 #load in level data and create world
 with open(f'level{level}_data.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
+    reader = csv.reader(csvfile, delimiter=';')
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
@@ -824,7 +824,7 @@ while run:
         world_data = reset_level()
         # load in level data and create world
         with open(f'level{level}_data.csv', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
+            reader = csv.reader(csvfile, delimiter=';')
             for x, row in enumerate(reader):
                 for y, tile in enumerate(row):
                     world_data[x][y] = int(tile)
@@ -953,7 +953,7 @@ while run:
                         world_data = reset_level()
                         #load in level data and create world
                         with open(f'level{level}_data.csv', newline='') as csvfile:
-                            reader = csv.reader(csvfile, delimiter=',')
+                            reader = csv.reader(csvfile, delimiter=';')
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
